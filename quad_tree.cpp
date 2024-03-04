@@ -1,0 +1,64 @@
+/*
+Question:
+588
+
+*/
+class Node {
+public:
+    bool val;
+    bool isLeaf;
+    Node* topLeft;
+    Node* topRight;
+    Node* bottomLeft;
+    Node* bottomRight;
+
+    Node() {}
+
+    Node(bool _val, bool _isLeaf) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = nullptr;
+        topRight = nullptr;
+        bottomLeft = nullptr;
+        bottomRight = nullptr;
+    }
+
+    Node(bool _val, bool _isLeaf, Node* _topLeft, Node* _topRight, Node* _bottomLeft, Node* _bottomRight) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = _topLeft;
+        topRight = _topRight;
+        bottomLeft = _bottomLeft;
+        bottomRight = _bottomRight;
+    }
+};
+
+class Solution {
+public:
+    Node* construct(vector<vector<int>>& grid) {
+        int n = grid.size();
+        return constructHelper(grid, 0, 0, n);
+    }
+
+    Node* constructHelper(vector<vector<int>>& grid, int x, int y, int size) {
+        if (size == 1) {
+            return new Node(grid[x][y] == 1, true);
+        }
+
+        int newSize = size / 2;
+        Node* topLeft = constructHelper(grid, x, y, newSize);
+        Node* topRight = constructHelper(grid, x, y + newSize, newSize);
+        Node* bottomLeft = constructHelper(grid, x + newSize, y, newSize);
+        Node* bottomRight = constructHelper(grid, x + newSize, y + newSize, newSize);
+
+        if (topLeft->isLeaf && topRight->isLeaf && 
+            bottomLeft->isLeaf && bottomRight->isLeaf &&
+            topLeft->val == topRight->val && 
+            topRight->val == bottomLeft->val 
+            && bottomLeft->val == bottomRight->val) {
+            return new Node(topLeft->val, true);
+        }
+
+        return new Node(false, false, topLeft, topRight, bottomLeft, bottomRight);
+    }
+};
